@@ -23,7 +23,8 @@ public class ReportController {
     }
 
     @PostMapping(value = "/upload-csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+        fileValidationService.validateCsvFile(file);
         return ResponseEntity.status(HttpStatus.OK).body("File upload successful: " + file.getOriginalFilename());
     }
 }
