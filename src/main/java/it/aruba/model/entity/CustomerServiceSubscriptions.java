@@ -32,8 +32,8 @@ public class CustomerServiceSubscriptions {
     @Column(name = "customer_id", nullable = false)
     private String customerId;
 
-    @Column(name = "service_name", nullable = false)
-    private String serviceName;
+    @Column(name = "service_type", nullable = false)
+    private String serviceType;
 
     @Column(name = "activation_date", nullable = false)
     private LocalDate activationDate;
