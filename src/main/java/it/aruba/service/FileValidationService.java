@@ -12,21 +12,32 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
+import static it.aruba.util.Constant.EXTENSION_CSV;
+import static it.aruba.util.Constant.EXTENSION_TXT;
+import static it.aruba.util.Constant.HEADER_ACTIVATION_DATE;
+import static it.aruba.util.Constant.HEADER_AMOUNT;
+import static it.aruba.util.Constant.HEADER_CUSTOMER_ID;
+import static it.aruba.util.Constant.HEADER_EXPIRATION_DATE;
+import static it.aruba.util.Constant.HEADER_SERVICE_TYPE;
+import static it.aruba.util.Constant.HEADER_STATUS;
+import static it.aruba.util.Constant.MIME_TYPE_APPLICATION_CSV;
+import static it.aruba.util.Constant.MIME_TYPE_APPLICATION_VND_MS_EXCEL;
+import static it.aruba.util.Constant.MIME_TYPE_TEXT_CSV;
+import static it.aruba.util.Constant.MIME_TYPE_TEXT_PLAIN;
+
 @Service
 public class FileValidationService {
 
     private static final List<String> CSV_MIME_TYPES = Arrays.asList(
-            "text/csv",
-            "text/plain",
-            "application/csv",
-            "application/vnd.ms-excel"
+            MIME_TYPE_TEXT_CSV,
+            MIME_TYPE_TEXT_PLAIN,
+            MIME_TYPE_APPLICATION_CSV,
+            MIME_TYPE_APPLICATION_VND_MS_EXCEL
     );
 
-    private static final List<String> CSV_EXTENSIONS = Arrays.asList(".csv", ".txt");
+    private static final List<String> CSV_EXTENSIONS = Arrays.asList(EXTENSION_CSV, EXTENSION_TXT);
 
-    private static final List<String> EXPECTED_HEADERS = Arrays.asList(
-            "customer_id", "service_type", "activation_date", "expiration_date", "amount", "status"
-    );
+    private static final List<String> EXPECTED_HEADERS = Arrays.asList(HEADER_CUSTOMER_ID, HEADER_SERVICE_TYPE, HEADER_ACTIVATION_DATE, HEADER_EXPIRATION_DATE, HEADER_AMOUNT, HEADER_STATUS);
 
     public void validateCsvFile(MultipartFile file) throws IOException {
         Tika tika = new Tika();
