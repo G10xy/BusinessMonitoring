@@ -1,6 +1,7 @@
 package it.aruba.rest;
 
-import it.aruba.service.FileValidationService;
+import it.aruba.service.ReportService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +14,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/report")
 public class ReportController {
 
-    private final FileValidationService fileValidationService;
+    private final ReportService reportService;
 
-    public ReportController(FileValidationService fileValidationService) {
-        this.fileValidationService = fileValidationService;
-    }
 
     @PostMapping(value = "/upload-csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        fileValidationService.validateCsvFile(file);
+        reportService.createReport(file);
         return ResponseEntity.status(HttpStatus.OK).body("File upload successful: " + file.getOriginalFilename());
     }
 }
