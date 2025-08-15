@@ -1,10 +1,12 @@
 package it.aruba.rest;
 
+import it.aruba.model.ReportSummaryResponse;
 import it.aruba.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,11 @@ public class ReportController {
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         reportService.createReport(file);
         return ResponseEntity.status(HttpStatus.OK).body("File upload successful: " + file.getOriginalFilename());
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<ReportSummaryResponse> getSummaryReport() {
+        return ResponseEntity.ok(reportService.getReportSummary());
     }
 }
 

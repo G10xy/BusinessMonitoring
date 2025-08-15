@@ -1,11 +1,15 @@
 package it.aruba.service;
 
+import it.aruba.model.ReportSummaryResponse;
 import it.aruba.model.entity.CustomerServiceSubscriptions;
 import it.aruba.model.enums.SubscriptionStatusEnum;
+import it.aruba.model.projection.AvgCustomerSpending;
+import it.aruba.model.projection.ServiceTypeCount;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -36,6 +40,27 @@ public class ReportService {
         customerServiceSubscriptionService.saveAll(records);
     }
 
+    @Transactional(readOnly = true)
+    public ReportSummaryResponse getReportSummary() {
+        List<SubscriptionStatusEnum> activeStatuses = List.of(SubscriptionStatusEnum.ACTIVE, SubscriptionStatusEnum.PENDING_RENEWAL);
+
+        Map<String, Long> activeByType = customerServiceSubscriptionService.countServicesByTypeWithStatus(activeStatuses)
+                .stream()
+                .collect(Collectors.toMap(ServiceTypeCount::serviceType, ServiceTypeCount::count));
+
+        List<AvgCustomerSpending> avgRows = customerServiceSubscriptionService.averageSpendingPerCustomer();
+
+        List<String> customersWithMultipleExpired = customerServiceSubscriptionService.findCustomersWithMultipleExpiredServices(SubscriptionStatusEnum.EXPIRED, 1);
+
+        List<String> customersWithExpiringServices = customerServiceSubscriptionService.findCustomersWithServicesExpiringWithinDays(activeStatuses, LocalDate.now().plusDays(15));
+
+        return new ReportSummaryResponse(
+                activeByType,
+                avgRows,
+                customersWithMultipleExpired,
+                customersWithExpiringServices
+        );
+    }
 
     private void checkForExpiredServices(List<CustomerServiceSubscriptions> records, int expiredServicesLimit) {
         Map<String, Long> expiredCountByCustomer = records.stream()
