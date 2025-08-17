@@ -8,7 +8,7 @@
 		<version>3.5.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>it.aruba</groupId>
+	<groupId>it.bm</groupId>
 	<artifactId>business-monitoring</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>business-monitoring</name>
