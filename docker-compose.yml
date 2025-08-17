@@ -74,6 +74,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
       - "${SERVER_PORT_MANAGEMENT}:${SERVER_PORT_MANAGEMENT}"
