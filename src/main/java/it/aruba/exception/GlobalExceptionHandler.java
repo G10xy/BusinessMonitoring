@@ -1,6 +1,6 @@
 package it.aruba.exception;
 
-import it.aruba.model.ErrorResponse;
+import it.aruba.model.response.ErrorResponse;
 import it.aruba.model.FileProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

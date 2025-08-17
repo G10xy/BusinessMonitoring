@@ -1,4 +1,4 @@
-package it.aruba.model;
+package it.aruba.model.csv;
 
 import lombok.Getter;
 import org.apache.commons.csv.CSVRecord;

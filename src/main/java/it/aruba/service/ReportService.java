@@ -2,7 +2,7 @@ package it.aruba.service;
 
 import it.aruba.kafka.ExpiredServicesKafkaProducer;
 import it.aruba.kafka.UpsellingServiceKafkaProducer;
-import it.aruba.model.ReportSummaryResponse;
+import it.aruba.model.response.ReportSummaryResponse;
 import it.aruba.model.entity.CustomerServiceSubscriptions;
 import it.aruba.model.enums.SubscriptionStatusEnum;
 import it.aruba.model.kafka.ExpiredServicesDTO;

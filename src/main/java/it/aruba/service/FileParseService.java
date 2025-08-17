@@ -1,6 +1,6 @@
 package it.aruba.service;
 
-import it.aruba.model.CsvRecordDto;
+import it.aruba.model.csv.CsvRecordDto;
 import it.aruba.model.entity.CustomerServiceSubscriptions;
 import it.aruba.model.entity.SubscriptionStatus;
 import it.aruba.model.enums.SubscriptionStatusEnum;

@@ -1,4 +1,4 @@
-package it.aruba.model;
+package it.aruba.model.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import it.aruba.model.projection.AvgCustomerSpending;

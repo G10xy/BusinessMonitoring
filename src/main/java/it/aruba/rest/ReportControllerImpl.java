@@ -1,6 +1,6 @@
 package it.aruba.rest;
 
-import it.aruba.model.ReportSummaryResponse;
+import it.aruba.model.response.ReportSummaryResponse;
 import it.aruba.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
