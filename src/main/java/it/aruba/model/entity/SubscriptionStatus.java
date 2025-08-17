@@ -16,9 +16,8 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
-@Table(name = "service_status")
+@Table(name = "subscription_status")
 public class SubscriptionStatus {
 
     @Id

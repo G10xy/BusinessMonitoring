@@ -45,7 +45,7 @@ public class CustomerServiceSubscriptions {
     private BigDecimal amount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_status", nullable = false)
+    @JoinColumn(name = "status_id", nullable = false)
     private SubscriptionStatus status;
 
 }
