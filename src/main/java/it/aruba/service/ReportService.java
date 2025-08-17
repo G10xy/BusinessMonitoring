@@ -1,8 +1,12 @@
 package it.aruba.service;
 
+import it.aruba.kafka.ExpiredServicesKafkaProducer;
+import it.aruba.kafka.UpsellingServiceKafkaProducer;
 import it.aruba.model.ReportSummaryResponse;
 import it.aruba.model.entity.CustomerServiceSubscriptions;
 import it.aruba.model.enums.SubscriptionStatusEnum;
+import it.aruba.model.kafka.ExpiredServicesDTO;
+import it.aruba.model.kafka.UpsellingServiceDTO;
 import it.aruba.model.projection.AvgCustomerSpending;
 import it.aruba.model.projection.ServiceTypeCount;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,8 @@ public class ReportService {
     private final FileValidationService fileValidationService;
     private final FileParseService fileParseService;
     private final CustomerServiceSubscriptionService customerServiceSubscriptionService;
+    private final UpsellingServiceKafkaProducer upsellingServiceKafkaProducer;
+    private final ExpiredServicesKafkaProducer expiredServicesKafkaProducer;
 
     public void createReport(MultipartFile file) throws IOException {
         fileValidationService.validateCsvFile(file);
@@ -70,6 +76,7 @@ public class ReportService {
         expiredCountByCustomer.forEach((customerId, count) -> {
             if (count > expiredServicesLimit) {
                 log.info("Alert: Customer {} has {} expired services.", customerId, count);
+                expiredServicesKafkaProducer.sendMessage(new ExpiredServicesDTO(customerId, count));
             }
         });
     }
@@ -80,6 +87,7 @@ public class ReportService {
             if ((record.getStatus().getCode() == SubscriptionStatusEnum.ACTIVE || record.getStatus().getCode() == SubscriptionStatusEnum.PENDING_RENEWAL)
                     && record.getActivationDate().isBefore(threeYearsAgo)) {
                 log.info("Alert: Upsell opportunity for customer {} about service {}", record.getCustomerId(), record.getServiceType());
+                upsellingServiceKafkaProducer.sendMessage(new UpsellingServiceDTO(record.getCustomerId(), record.getServiceType()));
             }
         });
     }
