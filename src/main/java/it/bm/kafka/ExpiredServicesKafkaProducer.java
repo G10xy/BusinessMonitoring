@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@Slf4j
 public class ExpiredServicesKafkaProducer {
     @Value("${event.topic.expired-services}")
     private String topicExpiredServices;
@@ -20,7 +19,6 @@ public class ExpiredServicesKafkaProducer {
     }
 
     public void sendMessage(ExpiredServicesDTO message) {
-        log.info("Sending message about expired services for customer {}", message.customerId());
         kafkaTemplate.send(topicExpiredServices, message);
     }
 }

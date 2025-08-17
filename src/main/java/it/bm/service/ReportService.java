@@ -35,8 +35,7 @@ public class ReportService {
     private final FileValidationService fileValidationService;
     private final FileParseService fileParseService;
     private final CustomerServiceSubscriptionService customerServiceSubscriptionService;
-    private final UpsellingServiceKafkaProducer upsellingServiceKafkaProducer;
-    private final ExpiredServicesKafkaProducer expiredServicesKafkaProducer;
+    private final NotificationService notificationService;
 
     public void createReport(MultipartFile file) throws IOException {
         fileValidationService.validateCsvFile(file);
@@ -76,7 +75,7 @@ public class ReportService {
         expiredCountByCustomer.forEach((customerId, count) -> {
             if (count > expiredServicesLimit) {
                 log.info("Alert: Customer {} has {} expired services.", customerId, count);
-                expiredServicesKafkaProducer.sendMessage(new ExpiredServicesDTO(customerId, count));
+                notificationService.sendExpiredServicesNotification(new ExpiredServicesDTO(customerId, count));
             }
         });
     }
@@ -87,7 +86,7 @@ public class ReportService {
             if ((record.getStatus().getCode() == SubscriptionStatusEnum.ACTIVE || record.getStatus().getCode() == SubscriptionStatusEnum.PENDING_RENEWAL)
                     && record.getActivationDate().isBefore(threeYearsAgo)) {
                 log.info("Alert: Upsell opportunity for customer {} about service {}", record.getCustomerId(), record.getServiceType());
-                upsellingServiceKafkaProducer.sendMessage(new UpsellingServiceDTO(record.getCustomerId(), record.getServiceType()));
+                notificationService.sendUpsellingNotification(new UpsellingServiceDTO(record.getCustomerId(), record.getServiceType()));
             }
         });
     }

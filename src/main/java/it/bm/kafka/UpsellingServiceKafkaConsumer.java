@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UpsellingServiceKafkaConsumer {
 
-    @Value("${event.topic.email-upselling-service}}")
+    @Value("${event.topic.email-upselling-service}")
     private String topicName;
     private final EmailService emailService;
 

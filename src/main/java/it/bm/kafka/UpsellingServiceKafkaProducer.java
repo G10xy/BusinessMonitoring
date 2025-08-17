@@ -8,7 +8,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
 public class UpsellingServiceKafkaProducer {
     @Value("${event.topic.email-upselling-service}")
     private String topicUpsellingService;
@@ -19,7 +18,6 @@ public class UpsellingServiceKafkaProducer {
     }
 
     public void sendMessage(UpsellingServiceDTO message) {
-        log.info("Sending message about upselling opportunity for customer {}", message.customerId());
         kafkaTemplate.send(topicUpsellingService, message);
     }
 }
