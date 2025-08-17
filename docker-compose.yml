@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   database:
     image: postgres:17
@@ -13,9 +12,58 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - aruba-network
+      - bm-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    ports:
+      - "${ZOOKEEPER_PORT}:${ZOOKEEPER_PORT}"
+    environment:
+      ZOOKEEPER_SERVER_ID: ${ZOOKEEPER_SERVER_ID}
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+      ZOOKEEPER_TICK_TIME: ${ZOOKEEPER_TICK_TIME}
+      ZOOKEEPER_SERVERS: ${ZOOKEEPER_SERVERS}
+      KAFKA_OPTS: "-Dzookeeper.4lw.commands.whitelist=*"
+    networks:
+      - bm-network
+    volumes:
+      - zookeeper_log:/var/lib/zookeeper/log
+      - zookeeper_data:/var/lib/zookeeper/data
+    healthcheck:
+      test: [ "CMD-SHELL", "echo ruok | nc zookeeper ${ZOOKEEPER_PORT} | grep imok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    ports:
+      - "${KAFKA_PORT}:${KAFKA_PORT}"
+      - "19092:19092"
+    environment:
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_PORT}
+      KAFKA_LISTENERS: ${KAFKA_LISTENERS}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
+      KAFKA_INTER_BROKER_LISTENER_NAME: ${KAFKA_INTER_BROKER_LISTENER_NAME}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR}
+    networks:
+      - bm-network
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server kafka:${KAFKA_PORT}"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -30,17 +78,45 @@ services:
       - "${SERVER_PORT}:${SERVER_PORT}"
       - "${SERVER_PORT_MANAGEMENT}:${SERVER_PORT_MANAGEMENT}"
     networks:
-      - aruba-network
+      - bm-network
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PWD: ${DB_PWD}
       SERVER_PORT: ${SERVER_PORT}
       SERVER_PORT_MANAGEMENT: ${SERVER_PORT_MANAGEMENT}
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM}
+      MAIL_TO: ${MAIL_TO}
+      MAIL_ENABLE: ${MAIL_ENABLE}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
+      MANAGEMENT_HEALTH_MAIL_ENABLED: ${MANAGEMENT_HEALTH_MAIL_ENABLED}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:${KAFKA_PORT}
+      EXPIRED_SERVICES_KAFKA_CLIENT_ID: ${EXPIRED_SERVICES_KAFKA_CLIENT_ID}
+      UPSELLING_SERVICE_KAFKA_CLIENT_ID: ${UPSELLING_SERVICE_KAFKA_CLIENT_ID}
+      KAFKA_PRODUCER_RETRIES: ${KAFKA_PRODUCER_RETRIES}
+      KAFKA_PRODUCER_ACKS: ${KAFKA_PRODUCER_ACKS}
+      KAFKA_PRODUCER_BACKOFF_INTERVAL: ${KAFKA_PRODUCER_BACKOFF_INTERVAL}
+      KAFKA_PRODUCER_MAX_ATTEMPTS: ${KAFKA_PRODUCER_MAX_ATTEMPTS}
+      EVENT_TOPIC_EXPIRED_SERVICES: ${EVENT_TOPIC_EXPIRED_SERVICES}
+      EVENT_TOPIC_EMAIL_UPSELLING_SERVICE: ${EVENT_TOPIC_EMAIL_UPSELLING_SERVICE}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS app:${SERVER_PORT_MANAGEMENT}/actuator/health > /dev/null || exit 1"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
 volumes:
   db_data:
+  zookeeper_log:
+  zookeeper_data:
+  kafka_data:
 
 networks:
-  aruba-network:
+  bm-network:
     driver: bridge

@@ -1,5 +1,5 @@
 # Use an official Java runtime as a parent image
-FROM openjdk:21-jdk-slim
+FROM openjdk:21-jdk
 
 WORKDIR /opt/app
 
