@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,12 +27,14 @@ public class ReportControllerImpl implements ReportController {
 
 
     @PostMapping(value = "/upload-csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('REPORT_USER') or hasRole('ADMIN')")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         reportService.createReport(file);
         return ResponseEntity.status(HttpStatus.OK).body("File upload successful: " + file.getOriginalFilename());
     }
 
     @GetMapping("/summary")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReportSummaryResponse> getSummaryReport() {
         return ResponseEntity.ok(reportService.getReportSummary());
     }
