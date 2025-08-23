@@ -27,6 +27,8 @@ CREATE TABLE customer_service_subscriptions (
     activation_date     DATE NOT NULL,
     expiration_date     DATE NOT NULL,
     status_id           BIGINT NOT NULL,
+    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by          VARCHAR(100) NOT NULL,
 
     CONSTRAINT pk_customer_service_subscriptions PRIMARY KEY (id),
     CONSTRAINT fk_subscription_status
