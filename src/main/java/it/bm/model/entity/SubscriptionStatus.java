@@ -27,4 +27,7 @@ public class SubscriptionStatus {
     @Column(unique = true, nullable = false)
     private SubscriptionStatusEnum code;
 
+    public SubscriptionStatus(SubscriptionStatusEnum code) {
+        this.code = code;
+    }
 }
