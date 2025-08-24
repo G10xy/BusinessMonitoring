@@ -1,12 +1,16 @@
 package it.bm.config;
 
+import it.bm.util.MDCUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import java.util.Map;
 
 @Configuration
 @EnableAsync
@@ -32,8 +36,26 @@ public class AsyncConfig {
         executor.setMaxPoolSize(maxPoolSize);
         executor.setQueueCapacity(queueCapacity);
         executor.setThreadNamePrefix(threadNamePrefix);
+        executor.setTaskDecorator(new MdcTaskDecorator());
         executor.initialize();
         return executor;
+    }
+
+    public static class MdcTaskDecorator implements TaskDecorator {
+        @Override
+        public Runnable decorate(Runnable runnable) {
+            Map<String, String> contextMap = MDCUtil.getCopyOfContextMap();
+            return () -> {
+                try {
+                    if (contextMap != null) {
+                        MDCUtil.setContextMap(contextMap);
+                    }
+                    runnable.run();
+                } finally {
+                    MDCUtil.clearContext();
+                }
+            };
+        }
     }
 }
 

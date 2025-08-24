@@ -46,7 +46,6 @@ services:
     container_name: kafka
     ports:
       - "${KAFKA_PORT}:${KAFKA_PORT}"
-      - "19092:19092"
     environment:
       KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_PORT}

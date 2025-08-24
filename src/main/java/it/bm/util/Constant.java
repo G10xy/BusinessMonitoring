@@ -16,4 +16,6 @@ public class Constant {
     public static final String HEADER_EXPIRATION_DATE = "expiration_date";
     public static final String HEADER_AMOUNT = "amount";
     public static final String HEADER_STATUS = "status";
+
+    public static final String CORRELATION_ID_HEADER_NAME = "X-Correlation-Id";
 }

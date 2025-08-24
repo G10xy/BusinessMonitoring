@@ -2,6 +2,7 @@ package it.bm.kafka;
 
 import it.bm.model.kafka.UpsellingServiceDTO;
 import it.bm.service.EmailService;
+import it.bm.util.MDCUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,10 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+
+import static it.bm.util.Constant.CORRELATION_ID_HEADER_NAME;
 
 @Component
 @Slf4j
@@ -38,10 +43,19 @@ public class UpsellingServiceKafkaConsumer {
     )
     public void upsellingServiceConsumer(
             @Payload UpsellingServiceDTO message,
-            @Header(KafkaHeaders.OFFSET) Long offset
+            @Header(KafkaHeaders.OFFSET) Long offset,
+            @Header(value = CORRELATION_ID_HEADER_NAME, required = false) byte[] correlationIdBytes
     ) throws MessagingException, MailException {
-       log.info("Received message: {}", message.customerId());
-       emailService.sendEmail(message);
+        try {
+            if (correlationIdBytes != null) {
+                String correlationId = new String(correlationIdBytes, StandardCharsets.UTF_8);
+                MDCUtil.setCorrelationId(correlationId);
+            }
+            log.info("Received message: {} at offset: {}", message.customerId(), offset);
+            emailService.sendEmail(message);
+        } finally {
+            MDCUtil.clearContext();
+        }
     }
 
 
@@ -51,10 +65,19 @@ public class UpsellingServiceKafkaConsumer {
             batch = "false",
             concurrency = "1"
     )
-    public void upsellingServiceConsumerDLQ(@Payload UpsellingServiceDTO message) {
-            log.warn("ATTENTION: received message in " + topicName + ".DLT meaning it was impossible to send email to " +
-                    "the direction about upselling opportunity for customer {}", message.customerId());
+    public void upsellingServiceConsumerDLQ(
+            @Payload UpsellingServiceDTO message,
+            @Header(KafkaHeaders.OFFSET) Long offset,
+            @Header(value = CORRELATION_ID_HEADER_NAME, required = false) byte[] correlationIdBytes) {
+        try {
+            if (correlationIdBytes != null) {
+                String correlationId = new String(correlationIdBytes, StandardCharsets.UTF_8);
+                MDCUtil.setCorrelationId(correlationId);
+            }
+            log.warn("ATTENTION: received message in " + topicName + ".DLT  at offset {} meaning it was impossible to send email to " +
+                    "the direction about upselling opportunity for customer {}", offset, message.customerId());
+        } finally {
+            MDCUtil.clearContext();
         }
-
-
+    }
 }
