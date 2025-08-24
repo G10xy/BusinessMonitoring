@@ -1,5 +1,6 @@
 package it.bm.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,16 @@ import static it.bm.util.Constant.MIME_TYPE_TEXT_PLAIN;
 @Service
 public class FileValidationService {
 
+    private final Tika tika;
+
+    public FileValidationService() {
+        this.tika = new Tika();
+    }
+
+    public FileValidationService(Tika tika) {
+        this.tika = tika;
+    }
+
     private static final List<String> CSV_MIME_TYPES = Arrays.asList(
             MIME_TYPE_TEXT_CSV,
             MIME_TYPE_TEXT_PLAIN,
@@ -40,8 +51,6 @@ public class FileValidationService {
     private static final List<String> EXPECTED_HEADERS = Arrays.asList(HEADER_CUSTOMER_ID, HEADER_SERVICE_TYPE, HEADER_ACTIVATION_DATE, HEADER_EXPIRATION_DATE, HEADER_AMOUNT, HEADER_STATUS);
 
     public void validateCsvFile(MultipartFile file) throws IOException {
-        Tika tika = new Tika();
-
         if (file == null) {
             throw new IllegalArgumentException("File cannot be null");
         }
