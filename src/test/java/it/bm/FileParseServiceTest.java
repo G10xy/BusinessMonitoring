@@ -62,7 +62,7 @@ class FileParseServiceTest {
     }
 
     @Test
-    void parsesMultipleRowsSkipsInvalidKeepsValid() {
+    void parsesMultipleRows_SkipsInvalidKeepsValid() {
         String csv ="customer_id,service_type,activation_date,expiration_date,amount,status\n" +
                         // valid
                         "C001,hosting,2024-01-01,2025-12-31,49.99,ACTIVE\n" +
@@ -124,7 +124,7 @@ class FileParseServiceTest {
     }
 
     @Test
-    void skipsRowWhenSubscriptionStatusServiceReturnsNull() {
+    void skipsRow_WhenSubscriptionStatusServiceReturnsNull() {
         String csv ="customer_id,service_type,activation_date,expiration_date,amount,status\n" +
                         "C001,Internet,2024-01-01,2024-12-31,49.99,ACTIVE\n";
 
@@ -136,7 +136,7 @@ class FileParseServiceTest {
     }
 
     @Test
-    void returnsEmptyListWhenOnlyHeaderPresent() {
+    void returnsEmptyList_WhenOnlyHeaderPresent() {
         String csv = "customer_id,service_type,activation_date,expiration_date,amount,status\n";
         MultipartFile file = csvFile("header-only.csv", csv);
 

@@ -41,33 +41,33 @@ class FileValidationServiceTest {
                     "123,Hosting,2023-01-01,2023-12-31,100,ACTIVE";
 
     @Test
-    void testNullFileThrowsException() {
+    void testNullFile_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> fileValidationService.validateCsvFile(null));
     }
 
     @Test
-    void testEmptyFileThrowsException() {
+    void testEmptyFile_ThrowsException() {
         MockMultipartFile file = new MockMultipartFile("file", "empty.csv", "text/csv", new byte[0]);
 
         assertThrows(IllegalArgumentException.class, () -> fileValidationService.validateCsvFile(file));
     }
 
     @Test
-    void testFileWithoutNameThrowsException() {
+    void testFileWithoutName_ThrowsException() {
         MockMultipartFile file = new MockMultipartFile("file", "", "text/csv", "data".getBytes());
 
         assertThrows(IllegalArgumentException.class, () -> fileValidationService.validateCsvFile(file));
     }
 
     @Test
-    void testInvalidExtensionThrowsException() {
+    void testInvalidExtension_ThrowsException() {
         MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "data".getBytes());
 
         assertThrows(IllegalArgumentException.class, () -> fileValidationService.validateCsvFile(file));
     }
 
     @Test
-    void testInvalidMimeTypeThrowsException() throws IOException {
+    void testInvalidMimeType_ThrowsException() throws IOException {
         MockMultipartFile file = new MockMultipartFile("file", "test.csv", "application/pdf", VALID_CSV.getBytes());
 
         when(tikaMock.detect(any(InputStream.class), eq("test.csv"))).thenReturn("application/pdf");
@@ -99,7 +99,7 @@ class FileValidationServiceTest {
     }
 
     @Test
-    void testTikaThrowsRuntimeException() throws IOException {
+    void testTika_ThrowsRuntimeException() throws IOException {
         MockMultipartFile file = new MockMultipartFile("file", "fail.csv", "text/csv",
                 VALID_CSV.getBytes(StandardCharsets.UTF_8));
 
@@ -111,7 +111,7 @@ class FileValidationServiceTest {
     }
 
     @Test
-    void testMissingHeadersThrowsException() {
+    void testMissingHeaders_ThrowsException() {
         String invalidContent = "wrong_header,another_one\n123,456";
         MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", invalidContent.getBytes());
 
@@ -119,7 +119,7 @@ class FileValidationServiceTest {
     }
 
     @Test
-    void testIncorrectNumberOfHeadersThrowsException() {
+    void testIncorrectNumberOfHeaders_ThrowsException() {
         String invalidContent = "customer_id,service_type,activation_date\n123,hosting,2023-01-01";
         MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", invalidContent.getBytes());
 
@@ -127,7 +127,7 @@ class FileValidationServiceTest {
     }
 
     @Test
-    void testHeaderOrderMismatchThrowsException() {
+    void testHeaderOrderMismatch_ThrowsException() {
         String invalidContent = "service_type,customer_id,activation_date,expiration_date,amount,status\n"
                 + "hosting,123,2023-01-01,2023-12-31,50,ACTIVE";
         MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv", invalidContent.getBytes());
