@@ -27,14 +27,14 @@ public class ReportControllerImpl implements ReportController {
 
 
     @PostMapping(value = "/upload-csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('REPORT_USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('REPORT_USER')")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         reportService.createReport(file);
         return ResponseEntity.status(HttpStatus.OK).body("File upload successful: " + file.getOriginalFilename());
     }
 
     @GetMapping("/summary")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('REPORT_USER')")
     public ResponseEntity<ReportSummaryResponse> getSummaryReport() {
         return ResponseEntity.ok(reportService.getReportSummary());
     }
