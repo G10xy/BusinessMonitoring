@@ -53,6 +53,7 @@ curl -s -X POST "$KEYCLOAK_URL/admin/realms/$REALM_NAME/clients" \
       \"http://app:8090/*\",
       \"https://insomnia.rest/*\",
       \"insomnia://oauth/callback\",
+      \"https://oauth.pstmn.io/v1/callback\",
       \"http://localhost:*\"
     ],
     \"webOrigins\": [
