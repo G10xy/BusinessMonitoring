@@ -67,6 +67,25 @@ services:
       timeout: 5s
       retries: 3
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.3
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: dev-mem
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HOSTNAME_URL: http://localhost:${KEYCLOAK_PORT}
+      KC_HOSTNAME_ADMIN_URL: http://localhost:${KEYCLOAK_PORT}
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+    ports:
+      - "${KEYCLOAK_PORT}:${KEYCLOAK_PORT}"
+    networks:
+      - bm-network
+
   app:
     build: .
     container_name: business-monitoring
@@ -117,7 +136,7 @@ services:
       RETRY_INITIAL_DELAY: ${RETRY_INITIAL_DELAY}
       RETRY_MULTIPLIER: ${RETRY_MULTIPLIER}
       RETRY_MAX_DELAY: ${RETRY_MAX_DELAY}
-      KEYCLOAK_AUTH_SERVER_URL: ${KEYCLOAK_AUTH_SERVER_URL}
+      KEYCLOAK_INTERNAL_AUTH_SERVER_URL: ${KEYCLOAK_INTERNAL_AUTH_SERVER_URL}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS app:${SERVER_PORT_MANAGEMENT}/actuator/health > /dev/null || exit 1"]
