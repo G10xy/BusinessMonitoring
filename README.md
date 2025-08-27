@@ -72,8 +72,8 @@ The application uses environment variables for configuration. Default values are
 ```env
 # Database
 DB_NAME=business_monitoring
-DB_USER=postgres
-DB_PWD=postgres123
+DB_USER=userBM
+DB_PWD=userBM123
 DB_HOST=database
 DB_PORT=5432
 DB_JDBC_BATCH_SIZE=20
@@ -141,7 +141,12 @@ KEYCLOAK_REALM=business-monitoring
 KEYCLOAK_PORT=8080
 ```
 ### 3. Start the Complete Environment
+Build the project by running:
+```bash
+mvn wrapper:wrapper
+```
 
+Then start all services using Docker Compose:
 ```bash
 docker-compose up -d
 ```
