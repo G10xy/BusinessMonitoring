@@ -137,6 +137,7 @@ RETRY_MAX_DELAY=5000
 
 # Keycloak 
 KEYCLOAK_INTERNAL_AUTH_SERVER_URL=http://keycloak:8080
+KEYCLOAK_EXTERNAL_AUTH_SERVER_URL=http://localhost:8080
 KEYCLOAK_REALM=business-monitoring
 KEYCLOAK_PORT=8080
 ```
@@ -144,6 +145,8 @@ KEYCLOAK_PORT=8080
 Build the project by running:
 ```bash
 mvn wrapper:wrapper
+
+./mvnw clean install
 ```
 
 Then start all services using Docker Compose:
