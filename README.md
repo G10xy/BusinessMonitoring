@@ -206,7 +206,10 @@ Interactive API documentation is available at:
 - **Swagger UI**: http://{host}:{server_port}/openapi/ui/swagger-ui.html
 - **OpenAPI JSON**: http://{host}:{server_port}/openapi/v1/api-docs
 
-_By using some rest client (such as postman/insomnia) you have to first authenticate by selecting Oauth2_
+_You have to first of all authenticate via Oauth2 process._
+_By using some rest client (such as postman/insomnia), select Oauth2 and add both auth and token endpoints and clientId._
+_It is possible to Authenticate via Swagger UI as well._
+
 ## CSV File Format
 
 The application accepts CSV files with the following structure:
